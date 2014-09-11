@@ -186,13 +186,13 @@ if [ -f $TSJ_PATH/.tsj_conf ]; then
    echo '| Found a valid configuartion.                  |'
    echo '|_______________________________________________|'
    cd $(cat $TSJ_PATH/.tsj_conf)
-   sleep 1
+   sleep 0.5
    main_menu
 else
    banner
    echo '|                                               |'
    echo '| A valid configuration has not found.          |'
    echo '|_______________________________________________|'
-   sleep 1
+   sleep 0.5
    first_configuration
 fi
