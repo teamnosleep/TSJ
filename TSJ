@@ -3,6 +3,7 @@
 TSJ_PATH=$(dirname $(readlink -f $0))
 VERSION=0.02
 TSJ_OUTPUT=$TSJ_PATH/TSJ_OUTPUT
+JOBS_NUM=$(cat /proc/cpuinfo | grep "^processor" | wc -l)
 
 # <| PRIVATE FUNCTIONS |>
 
@@ -157,7 +158,7 @@ rom_series () {
 	  mv $(ls $BUILD_ROM/out/target/product/$BUILD_DEVICE/ | grep zip$) $TSJ_OUTPUT/$BUILD_ROM-$BUILD_DEVICE-$(date +%Y_%m_%d).zip
 	  mv .build_log $TSJ_OUTPUT/$BUILD_ROM-$BUILD_DEVICE-$(date +%Y_%m_%d)-build.log
 	  echo $(md5sum $TSJ_OUTPUT/$BUILD_ROM-$BUILD_DEVICE-$(date +%Y_%m_%d).zip | awk '{print $1}') > $TSJ_OUTPUT/$BUILD_ROM-$BUILD_DEVICE-sum.md5
-	  echo 'make -j$JOBS_NUM clean' >> .build_script
+	  cd $BUILD_ROM && make -j$JOBS_NUM clean && cd ..
 	  let ROM_N=$ROM_N-1
    done
 }
