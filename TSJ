@@ -93,7 +93,19 @@ rom_series () {
 license () {
    banner
    echo '|                                               |'
-   echo '| This feature is still under development!      |'
+   echo '|                    License                    |'
+   echo '|                   ---------                   |'
+   echo '|                                               |'
+   echo '| This tool is released under the GPL v2        |'
+   echo '| license. In order to know what you are        |'
+   echo '| allowed to do and what you are not, please    |'
+   echo '| consult the official GNU documentation,       |'
+   echo '| available at:                                 |'
+   echo '| http://www.gnu.org/licenses/gpl-2.0.html      |'
+   echo '|                                               |'
+   echo '| Sources are available at:                     |'
+   echo '| https://github.com/MoltenMotherBoard/TSJ      |'
+   echo '|                                               |'
    echo '| Press ENTER to continue.                      |'
    echo '|_______________________________________________|'
    read -p
