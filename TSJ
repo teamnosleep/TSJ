@@ -1,0 +1,171 @@
+#!/usr/bin/sh
+
+TSJ_PATH=$(dirname $(readlink -f $0))
+
+
+# <| PRIVATE FUNCTIONS |>
+
+banner () {
+   clear
+   echo ' _______________________________________________'
+   echo '|===============================================|'
+   echo '|                     TSJ                       |'
+   echo '|-----------------------------------------------|'
+   echo '|   Your terminal semplified Jenkins script!    |'
+   echo '|===============================================|'
+}
+
+first_configuration () {
+   banner
+   echo
+   echo 'Welcome to TSJ!'
+   echo 'This tool was born with the aim to create a simplified'
+   echo 'terminal version of what is massively known as'
+   echo 'Jenkins.'
+   echo ''
+   echo 'In order to use it, please, drag your Android'
+   read -p 'environment folder here: ' ENV_PATH
+   ENV_PATH=$(echo $ENV_PATH | tail -c +2 | head -c -2)
+   echo $ENV_PATH > $ENV_PATH/.tsj_conf
+   mv ./TSJ $ENV_PATH/
+   TSJ_PATH=$ENV_PATH
+   echo ''
+   echo 'Your environment has been correctly loaded and'
+   echo 'TSJ script has been moved into that.'
+   sleep 1
+   bash $TSJ_PATH/TSJ
+}
+
+exit_tsj () {
+   banner
+   echo '|                                               |'
+   echo '|                   Goodbye!                    |'
+   echo '|_______________________________________________|'
+   sleep 1
+   clear
+}
+
+rom_series () {
+   banner
+   echo '|                                               |'
+   echo '|            Compile a ROMs series              |'
+   echo '|           -----------------------             |'
+   echo '| Which ones of these Android workspaces would  |'
+   echo '| include into your series compilation?         |'
+   echo '|_______________________________________________|'
+   echo ''
+   DIRS=$(ls -l --time-style="long-iso" $ENV_PATH | egrep '^d'| awk '{print $9}')
+   for DIR in $DIRS; do
+      if [ -d $DIR/build ]; then
+         echo  '  [*] '$DIR
+      fi
+   done
+   echo ''
+   echo '  [0] Back to the main menu.'
+   echo ' _______________________________________________'
+   echo '|                                               |'
+   echo '| How many ROMs do you want to compile?         |'
+   echo '|_______________________________________________|'
+   echo ''
+   read -p 'Choice: ' ROM_N
+   echo "$ROM_N" > .rom_n
+   echo ' _______________________________________________'
+   echo '|                                               |'
+   echo '| Write down the ROMs that you want to be       |'
+   echo '| builded (separate each one with SPACE):       |'
+   echo '|_______________________________________________|'
+   echo ''
+   read -p 'Choice: ' ROM_LIST
+   if [ -z "$ROM_LIST" ]; then
+      echo ' _______________________________________________'
+      echo '|                                               |'
+      echo '| You did not write any ROM. Back to main menu. |'
+      echo '|_______________________________________________|'
+      sleep 1
+      main_menu
+   elif [ "$ROM_LIST" == 0 ]; then
+      main_menu
+   else
+      echo "$ROM_LIST" > .rom_list
+   fi
+}
+
+license () {
+   banner
+   echo '|                                               |'
+   echo '| This feature is still under development!      |'
+   echo '| Press ENTER to continue.                      |'
+   echo '|_______________________________________________|'
+   read -p
+   main_menu
+}
+
+about () {
+   banner
+   echo '|                                               |'
+   echo '| This feature is still under development!      |'
+   echo '| Press ENTER to continue.                      |'
+   echo '|_______________________________________________|'
+   read -p
+   main_menu
+}
+
+main_menu () {
+   banner
+   echo '|                                               |'
+   echo '|                  Main Menu                    |'
+   echo '|                 -----------                   |'
+   echo '|                                               |'
+   echo '| [1] Compile a series ROMs                     |'
+   echo '| [2] License                                   |'
+   echo '| [3] About                                     |'
+   echo '|                                               |'
+   echo '|                                               |'
+   echo '|-----------------------------------------------|'
+   echo '| [0] Exit                                      |'
+   echo '|_______________________________________________|'
+   echo ''
+   read -p '                 Your choose: ' CHOICE
+   if [ "$CHOICE" == 1 ]; then
+      rom_series
+   elif [ "$CHOICE" == 2 ]; then
+      license
+   elif [ "$CHOICE" == 3 ]; then
+      about
+   elif [ "$CHOICE" == 0 ]; then
+      exit_tsj
+   else
+      echo ' _______________________________________________'
+      echo '|                                               |'
+      echo '|                 WRONG INPUT!                  |'
+      echo '|_______________________________________________|'
+      sleep 1
+      main_menu
+   fi
+}
+
+
+# <| BOOT INSTRUCTIONS |>
+
+banner
+echo '|                                               |'
+echo '| Please wait, I am looking for an eventual     |'
+echo '| already initialized configuration...          |'
+echo '|_______________________________________________|'
+sleep 1
+if [ -f $TSJ_PATH/.tsj_conf ]; then
+   banner
+   echo '|                                               |'
+   echo '| Found a valid configuartion.                  |'
+   echo '|_______________________________________________|'
+   cd $(cat $TSJ_PATH/.tsj_conf)
+   sleep 1
+   main_menu
+else
+   banner
+   echo '|                                               |'
+   echo '| A valid configuration has not found.          |'
+   echo '|_______________________________________________|'
+   sleep 1
+   first_configuration
+fi

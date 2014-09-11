@@ -1,4 +1,0 @@
-TSJ
-===
-
-Semplified terminal Jenkins
