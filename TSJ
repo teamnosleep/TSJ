@@ -43,6 +43,7 @@ exit_tsj () {
    echo '|_______________________________________________|'
    sleep 1
    clear
+   exit
 }
 
 rom_series () {
