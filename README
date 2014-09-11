@@ -1,1 +1,8 @@
-TSJ is a semplified terminal Jenkins script.
+TSJ
+===
+
+TSJ is a tool created and designed to achieve a streamlined, simple,
+basic and working version of Jenkins.
+It is written to make possible to make the build configuration
+of different ROMs and their uploading process to a remote hosting
+space possible from a GNU/Linux terminal.
