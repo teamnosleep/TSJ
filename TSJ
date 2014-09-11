@@ -111,7 +111,7 @@ license () {
    echo '|                                               |'
    echo '| Press ENTER to continue.                      |'
    echo '|_______________________________________________|'
-   read -p
+   read -p ''
    main_menu
 }
 
@@ -121,7 +121,7 @@ about () {
    echo '| This feature is still under development!      |'
    echo '| Press ENTER to continue.                      |'
    echo '|_______________________________________________|'
-   read -p
+   read -p ''
    main_menu
 }
 
