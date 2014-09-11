@@ -47,7 +47,7 @@ prepare_build_script () {
 build_script () {
    echo '. build/envsetup.sh' >> .build_script
    echo 'lunch '$BUILD_DEVICE'-userdebug' >> .build_script
-   echo 'make -j$JOBS_NUM otapackage' >> .build_script
+   echo 'make -j$JOBS_NUM otapackage > .build_log' >> .build_script
 }
 
 exit_tsj () {
@@ -154,7 +154,8 @@ rom_series () {
 	     build_script
 	     let DEVICE_N=$DEVICE_N-1
 	  done
-	  mv $(ls $BUILD_ROM/out/target/product/$BUILD_DEVICE/ | grep zip$) $TSJ_OUTPUT/$BUILD_ROM-$BUILD_DEVICE-4(date +%Y_%m_%d).zip
+	  mv $(ls $BUILD_ROM/out/target/product/$BUILD_DEVICE/ | grep zip$) $TSJ_OUTPUT/$BUILD_ROM-$BUILD_DEVICE-$(date +%Y_%m_%d).zip
+	  mv .build_log $TSJ_OUTPUT/$BUILD_ROM-$BUILD_DEVICE-$(date +%Y_%m_%d)-build.log
 	  echo 'make -j$JOBS_NUM clean' >> .build_script
 	  let ROM_N=$ROM_N-1
    done
