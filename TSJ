@@ -1,7 +1,7 @@
 #!/usr/bin/sh
 
 TSJ_PATH=$(dirname $(readlink -f $0))
-
+VERSION=0.01
 
 # <| PRIVATE FUNCTIONS |>
 
