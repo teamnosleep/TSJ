@@ -1,7 +1,9 @@
 #!/usr/bin/sh
 
-TSJ_PATH=$(dirname $(readlink -f $0))
+# <| PRIVATE DECLARATIONS |>
+
 VERSION=0.02
+TSJ_PATH=$(dirname $(readlink -f $0))
 TSJ_OUTPUT=$TSJ_PATH/TSJ_OUTPUT
 JOBS_NUM=$(cat /proc/cpuinfo | grep "^processor" | wc -l)
 
