@@ -68,7 +68,11 @@ rom_series () {
    echo '|_______________________________________________|'
    echo ''
    read -p 'Choice: ' ROM_N
-   echo "$ROM_N" > .rom_n
+   if [ "$ROM_N" == 0 ]; then
+      main_menu
+   else
+      echo "$ROM_N" > .rom_n
+   fi
    echo ' _______________________________________________'
    echo '|                                               |'
    echo '| Write down the ROMs that you want to be       |'
@@ -82,8 +86,6 @@ rom_series () {
       echo '| You did not write any ROM. Back to main menu. |'
       echo '|_______________________________________________|'
       sleep 1
-      main_menu
-   elif [ "$ROM_LIST" == 0 ]; then
       main_menu
    else
       echo "$ROM_LIST" > .rom_list
