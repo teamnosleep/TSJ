@@ -2,6 +2,7 @@
 
 TSJ_PATH=$(dirname $(readlink -f $0))
 VERSION=0.01
+TSJ_OUTPUT=$TSJ_PATH/TSJ_OUTPUT
 
 # <| PRIVATE FUNCTIONS |>
 
@@ -36,6 +37,19 @@ first_configuration () {
    bash $TSJ_PATH/TSJ
 }
 
+prepare_build_script () {
+   echo '#!/usr/bin/sh' > .build_script
+   echo '' >> .build_script
+   echo 'JOBS_NUM=$(cat /proc/cpuinfo | grep "^processor" | wc -l)' >> .build_script
+   echo '' >> .build_script
+}
+
+build_script () {
+   echo '. build/envsetup.sh' >> .build_script
+   echo 'lunch '$BUILD_DEVICE'-userdebug' >> .build_script
+   echo 'make -j$JOBS_NUM otapackage' >> .build_script
+}
+
 exit_tsj () {
    banner
    echo '|                                               |'
@@ -55,6 +69,7 @@ rom_series () {
    echo '| include into your series compilation?         |'
    echo '|_______________________________________________|'
    echo ''
+   prepare_build_script
    DIRS=$(ls -l --time-style="long-iso" $ENV_PATH | egrep '^d'| awk '{print $9}')
    for DIR in $DIRS; do
       if [ -d $DIR/build ]; then
@@ -62,6 +77,9 @@ rom_series () {
       fi
    done
    echo ''
+   if [ -f $ENV_PATH/.build_script ]; then
+      echo '  [x] Compile from already configured build_script'
+   fi
    echo '  [0] Back to the main menu.'
    echo ' _______________________________________________'
    echo '|                                               |'
@@ -71,6 +89,10 @@ rom_series () {
    read -p 'Choice: ' ROM_N
    if [ "$ROM_N" == 0 ]; then
       main_menu
+      if [ -f $ENV_PATH/.build_script ]; then
+         elif [ "$ROM_N" == "x" ]; then
+            bash .build_script
+      fi
    else
       echo "$ROM_N" > .rom_n
    fi
@@ -91,6 +113,51 @@ rom_series () {
    else
       echo "$ROM_LIST" > .rom_list
    fi
+   while [ "$ROM_N" -gt 0 ]; do
+      BUILD_ROM=$(echo rom_list | awk '{print $$ROM_N}')
+      banner
+      echo '|                                               |'
+      echo '|        ROMs building configurations           |'
+      echo '|       ------------------------------          |'
+      echo '| How many devices you want to build            |'
+      echo '| the ROM for?                                  |'
+      echo '|_______________________________________________|'
+      echo ''
+      echo 'ROM: '$BUILD_ROM
+      read -p 'Choice: ' DEVICE_N
+	  if [ "$DEVICE_N" == 0]; then
+	     rom_series
+	  else
+	     echo "$DEVICE_N" > .device_n
+      fi
+      echo ' _______________________________________________'
+      echo '|                                               |'
+      echo '| Write down the devices codenames you want     |'
+      echo '| to build the following ROM for (separate      |'
+      echo '| each one with SPACE).                         |'
+      echo '|_______________________________________________|'
+      echo ''
+      echo 'ROM: '$BUILD_ROM
+      read -p 'Choice: ' DEVICE_LIST
+         if [ -z "$DEVICE_LIST" ]; then
+            echo ' _______________________________________________'
+            echo '|                                               |'
+            echo '| You did not write any ROM. Back to main menu. |'
+            echo '|_______________________________________________|'
+	     sleep 1
+	     rom_series
+	  else
+	     echo "$DEVICE_LIST" > .device_list
+	  fi
+	  while [ "$DEVICE_N" -gt 0 ]; do
+	     BUILD_DEVICE=$(echo device_list | awk '{print $$DEVICE_N}')
+	     build_script
+	     let DEVICE_N=$DEVICE_N-1
+	  done
+	  mv $(ls $BUILD_ROM/out/target/product/$BUILD_DEVICE/ | grep zip$) $TSJ_OUTPUT/$BUILD_ROM-$BUILD_DEVICE-4(date +%Y_%m_%d).zip
+	  echo 'make -j$JOBS_NUM clean' >> .build_script
+	  let ROM_N=$ROM_N-1
+   done
 }
 
 license () {
