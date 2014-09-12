@@ -272,6 +272,6 @@ else
    echo '|                                               |'
    echo '| A valid configuration has not found.          |'
    echo '|_______________________________________________|'
-   sleep 0.5
+   sleep 1
    first_configuration
 fi
