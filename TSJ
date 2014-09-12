@@ -92,10 +92,8 @@ rom_series () {
    read -p 'Choice: ' ROM_N
    if [ "$ROM_N" == 0 ]; then
       main_menu
-      if [ -f $ENV_PATH/.build_script ]; then
-         elif [ "$ROM_N" == "x" ]; then
-            bash .build_script
-      fi
+   elif [ "$ROM_N" == "x" ]; then
+      bash .build_script
    else
       echo "$ROM_N" > .rom_n
    fi
