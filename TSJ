@@ -135,7 +135,7 @@ rom_series () {
       echo ''
       echo 'ROM: '$BUILD_ROM
       read -p 'Choice: ' DEVICE_N
-	  if [ "$DEVICE_N" == 0]; then
+	  if [ "$DEVICE_N" == 0 ]; then
 	     rom_series
 	  else
 	     echo "$DEVICE_N" > .device_n
