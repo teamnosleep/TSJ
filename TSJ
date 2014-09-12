@@ -49,6 +49,30 @@ first_configuration () {
    bash $TSJ_PATH/TSJ
 }
 
+build_confirmation () {
+   clear
+   echo ' _______________________________________________'
+   echo '|===============================================|'
+   echo '|                   ATTENTION!                  |'
+   echo '|===============================================|'
+   echo '|                                               |'
+   echo '| The build process you configured, could       |'
+   echo '| require several hours, depending on the       |'
+   echo '| capabilities of the machine which you are     |'
+   echo '| preparing to go on with.                      |'
+   echo '|                                               |'
+   echo '| Are you sure?                                 |'
+   echo '|_______________________________________________|'
+   echo ''
+   read -p 'Choice [y/N]: ' YN
+   if [ "$YN" = "y" ]; then
+      bash .build_script
+      sleep 2
+   elif [ "$YN" = "Y" ]; then
+      bash .build_script
+   fi
+}
+
 prepare_build_script () {
    echo '#!/usr/bin/sh' > .build_script
    echo '' >> .build_script
@@ -58,6 +82,7 @@ prepare_build_script () {
 }
 
 build_script () {
+   echo 'cd '$BUILD_ROM'' >> .build_script
    echo '. build/envsetup.sh' >> .build_script
    echo 'lunch '$BUILD_DEVICE'-userdebug' >> .build_script
    echo 'make -j$JOBS_NUM otapackage > .build_log' >> .build_script
@@ -90,9 +115,6 @@ rom_series () {
       fi
    done
    echo ''
-   if [ -f $ENV_PATH/.build_script ]; then
-      echo '  [x] Compile from already configured build_script'
-   fi
    echo '  [0] Back to the main menu.'
    echo ' _______________________________________________'
    echo '|                                               |'
@@ -102,8 +124,13 @@ rom_series () {
    read -p 'Choice: ' ROM_N
    if [ "$ROM_N" == 0 ]; then
       main_menu
-   elif [ "$ROM_N" == "x" ]; then
-      bash .build_script
+   elif [ $(echo $ROM_N | tr -d '[:digit:]') ]; then
+      echo ' _______________________________________________'
+      echo '|                                               |'
+      echo '| I asked you to write a number.                |'
+      echo '|_______________________________________________|'
+      sleep 1
+      rom_series
    else
       echo "$ROM_N" > .rom_n
    fi
@@ -131,12 +158,19 @@ rom_series () {
       echo '|        ROMs building configurations           |'
       echo '|       ------------------------------          |'
       echo '| How many devices you want to build            |'
-      echo '| the ROM for?                                  |'
+      echo '| the following ROM for?                        |'
       echo '|_______________________________________________|'
       echo ''
       echo 'ROM: '$BUILD_ROM
       read -p 'Choice: ' DEVICE_N
       if [ "$DEVICE_N" == 0 ]; then
+         rom_series
+      elif [ $(echo $DEVICE_N | tr -d '[:digit:]') ]; then
+         echo ' _______________________________________________'
+         echo '|                                               |'
+         echo '| I asked you to write a number.                |'
+         echo '|_______________________________________________|'
+         sleep 1
          rom_series
       else
          echo "$DEVICE_N" > .device_n
@@ -169,11 +203,19 @@ rom_series () {
       echo 'mv .build_log $TSJ_OUTPUT/'$BUILD_ROM'-'$BUILD_DEVICE'-$(date +%Y_%m_%d)-build.log' >> .build_script
       echo 'echo $(md5sum $TSJ_OUTPUT/'$BUILD_ROM'-'$BUILD_DEVICE'-$(date +%Y_%m_%d).zip | awk "{print $1}") > $TSJ_OUTPUT/'$BUILD_ROM'-'$BUILD_DEVICE'-sum.md5' >> .build_script
       echo 'make -j$JOBS_NUM clean' >> .build_script
+      echo 'cd ..' >> .build_script
       echo '' >> .build_script
       echo '##########' >> .build_script
       echo '' >> .build_script
       let ROM_N=$ROM_N-1
    done
+   echo ' _______________________________________________'
+   echo '|                                               |'
+   echo '| The build script has been correctly           |'
+   echo '| configured.                                   |'
+   echo '|_______________________________________________|'
+   sleep 2
+   main_menu
 }
 
 license () {
@@ -226,12 +268,15 @@ main_menu () {
    echo '|                  Main Menu                    |'
    echo '|                 -----------                   |'
    echo '|                                               |'
-   echo '| [1] Compile a series ROMs                     |'
+   echo '| [1] Configure a ROMs series build             |'
    echo '| [2] License                                   |'
    echo '| [3] About                                     |'
    echo '|                                               |'
    echo '|                                               |'
    echo '|-----------------------------------------------|'
+   if [ -f $TSJ_PATH/.build_script ]; then
+      echo '| [x] Compile from configured build script      |'
+   fi
    echo '| [0] Exit                                      |'
    echo '|_______________________________________________|'
    echo ''
@@ -242,6 +287,12 @@ main_menu () {
       license
    elif [ "$CHOICE" == 3 ]; then
       about
+   elif [ "$CHOICE" == "x" ]; then
+      build_confirmation
+      main_menu
+   elif [ "$CHOICE" == "X" ]; then
+      build_confirmation
+      main_menu
    elif [ "$CHOICE" == 0 ]; then
       exit_tsj
    else
