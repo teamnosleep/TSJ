@@ -135,10 +135,10 @@ rom_series () {
       echo ''
       echo 'ROM: '$BUILD_ROM
       read -p 'Choice: ' DEVICE_N
-	  if [ "$DEVICE_N" == 0 ]; then
-	     rom_series
-	  else
-	     echo "$DEVICE_N" > .device_n
+      if [ "$DEVICE_N" == 0 ]; then
+         rom_series
+      else
+         echo "$DEVICE_N" > .device_n
       fi
       echo ' _______________________________________________'
       echo '|                                               |'
@@ -149,26 +149,26 @@ rom_series () {
       echo ''
       echo 'ROM: '$BUILD_ROM
       read -p 'Choice: ' DEVICE_LIST
-         if [ -z "$DEVICE_LIST" ]; then
-            echo ' _______________________________________________'
-            echo '|                                               |'
-            echo '| You did not write any ROM. Back to main menu. |'
-            echo '|_______________________________________________|'
-	     sleep 1
-	     rom_series
-	  else
-	     echo "$DEVICE_LIST" > .device_list
-	  fi
-	  while [ "$DEVICE_N" -gt 0 ]; do
-	     BUILD_DEVICE=$(cat .device_list | awk '{print $$DEVICE_N}')
-	     build_script
-	     let DEVICE_N=$DEVICE_N-1
-	  done
-	  mv $(ls $BUILD_ROM/out/target/product/$BUILD_DEVICE/ | grep zip$) $TSJ_OUTPUT/$BUILD_ROM-$BUILD_DEVICE-$(date +%Y_%m_%d).zip
-	  mv .build_log $TSJ_OUTPUT/$BUILD_ROM-$BUILD_DEVICE-$(date +%Y_%m_%d)-build.log
-	  echo $(md5sum $TSJ_OUTPUT/$BUILD_ROM-$BUILD_DEVICE-$(date +%Y_%m_%d).zip | awk '{print $1}') > $TSJ_OUTPUT/$BUILD_ROM-$BUILD_DEVICE-sum.md5
-	  cd $BUILD_ROM && make -j$JOBS_NUM clean && cd ..
-	  let ROM_N=$ROM_N-1
+      if [ -z "$DEVICE_LIST" ]; then
+         echo ' _______________________________________________'
+         echo '|                                               |'
+         echo '| You did not write any ROM. Back to main menu. |'
+         echo '|_______________________________________________|'
+	 sleep 1
+	 rom_series
+      else
+         echo "$DEVICE_LIST" > .device_list
+      fi
+      while [ "$DEVICE_N" -gt 0 ]; do
+         BUILD_DEVICE=$(cat .device_list | awk '{print $$DEVICE_N}')
+         build_script
+         let DEVICE_N=$DEVICE_N-1
+      done
+      mv $(ls $BUILD_ROM/out/target/product/$BUILD_DEVICE/ | grep zip$) $TSJ_OUTPUT/$BUILD_ROM-$BUILD_DEVICE-$(date +%Y_%m_%d).zip
+      mv .build_log $TSJ_OUTPUT/$BUILD_ROM-$BUILD_DEVICE-$(date +%Y_%m_%d)-build.log
+      echo $(md5sum $TSJ_OUTPUT/$BUILD_ROM-$BUILD_DEVICE-$(date +%Y_%m_%d).zip | awk '{print $1}') > $TSJ_OUTPUT/$BUILD_ROM-$BUILD_DEVICE-sum.md5
+      cd $BUILD_ROM && make -j$JOBS_NUM clean && cd ..
+      let ROM_N=$ROM_N-1
    done
 }
 
