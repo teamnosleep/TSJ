@@ -53,6 +53,7 @@ prepare_build_script () {
    echo '#!/usr/bin/sh' > .build_script
    echo '' >> .build_script
    echo 'JOBS_NUM=$(cat /proc/cpuinfo | grep "^processor" | wc -l)' >> .build_script
+   echo 'TSJ_OUTPUT='$TSJ_OUTPUT'' >> .build_script
    echo '' >> .build_script
 }
 
@@ -164,10 +165,13 @@ rom_series () {
          build_script
          let DEVICE_N=$DEVICE_N-1
       done
-      mv $(ls $BUILD_ROM/out/target/product/$BUILD_DEVICE/ | grep zip$) $TSJ_OUTPUT/$BUILD_ROM-$BUILD_DEVICE-$(date +%Y_%m_%d).zip
-      mv .build_log $TSJ_OUTPUT/$BUILD_ROM-$BUILD_DEVICE-$(date +%Y_%m_%d)-build.log
-      echo $(md5sum $TSJ_OUTPUT/$BUILD_ROM-$BUILD_DEVICE-$(date +%Y_%m_%d).zip | awk '{print $1}') > $TSJ_OUTPUT/$BUILD_ROM-$BUILD_DEVICE-sum.md5
-      cd $BUILD_ROM && make -j$JOBS_NUM clean && cd ..
+      echo 'mv $(ls '$BUILD_ROM'/out/target/product/'$BUILD_DEVICE'/ | grep zip$) $TSJ_OUTPUT/'$BUILD_ROM'-'$BUILD_DEVICE'-$(date +%Y_%m_%d).zip' >> .build_script
+      echo 'mv .build_log $TSJ_OUTPUT/'$BUILD_ROM'-'$BUILD_DEVICE'-$(date +%Y_%m_%d)-build.log' >> .build_script
+      echo 'echo $(md5sum $TSJ_OUTPUT/'$BUILD_ROM'-'$BUILD_DEVICE'-$(date +%Y_%m_%d).zip | awk "{print $1}") > $TSJ_OUTPUT/'$BUILD_ROM'-'$BUILD_DEVICE'-sum.md5' >> .build_script
+      echo 'make -j$JOBS_NUM clean' >> .build_script
+      echo '' >> .build_script
+      echo '##########' >> .build_script
+      echo '' >> .build_script
       let ROM_N=$ROM_N-1
    done
 }
