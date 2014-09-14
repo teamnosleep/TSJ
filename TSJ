@@ -2,7 +2,7 @@
 
 # <| PRIVATE DECLARATIONS |>
 
-VERSION=0.02
+VERSION=0.03
 TSJ_PATH=$(dirname $(readlink -f $0))
 TSJ_OUTPUT=$TSJ_PATH/TSJ_OUTPUT
 JOBS_NUM=$(cat /proc/cpuinfo | grep "^processor" | wc -l)
