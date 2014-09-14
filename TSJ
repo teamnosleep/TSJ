@@ -2,7 +2,7 @@
 
 # <| PRIVATE DECLARATIONS |>
 
-VERSION=0.03
+VERSION=0.02
 TSJ_PATH=$(dirname $(readlink -f $0))
 TSJ_OUTPUT=$TSJ_PATH/TSJ_OUTPUT
 JOBS_NUM=$(cat /proc/cpuinfo | grep "^processor" | wc -l)
@@ -190,8 +190,8 @@ rom_series () {
          echo '|                                               |'
          echo '| You did not write any ROM. Back to main menu. |'
          echo '|_______________________________________________|'
-	 sleep 1
-	 rom_series
+	     sleep 1
+	     rom_series
       else
          echo "$DEVICE_LIST" > .device_list
       fi
@@ -206,7 +206,12 @@ rom_series () {
       echo 'make -j$JOBS_NUM clean' >> .build_script
       echo 'cd ..' >> .build_script
       echo '' >> .build_script
-      echo '##########' >> .build_script
+	  echo 'cd $TSJ_OUTPUT' >> .build_script
+	  echo 'curl -T '$BUILD_ROM'-'$BUILD_DEVICE'-$(date +%Y_%m_%d).zip ftp://'$(cat ../.ftp | awk '{print $1}')' --user '$(cat ../.ftp | awk '{print $2}')':'$(cat ../.ftp | awk '{print $3}') >> .build_script
+      echo 'curl -T '$BUILD_ROM'-'$BUILD_DEVICE'-$(date +%Y_%m_%d)-build.log ftp://'$(cat ../.ftp | awk '{print $1}')' --user '$(cat ../.ftp | awk '{print $2}')':'$(cat ../.ftp | awk '{print $3}') >> .build_script
+	  echo 'curl -T '$BUILD_ROM'-'$BUILD_DEVICE'-sum.md5 ftp://'$(cat ../.ftp | awk '{print $1}')' --user '$(cat ../.ftp | awk '{print $2}')':'$(cat ../.ftp | awk '{print $3}') >> .build_script
+	  echo '' >> .build_script
+	  echo '##########' >> .build_script
       echo '' >> .build_script
       let ROM_N=$ROM_N-1
    done
@@ -217,6 +222,50 @@ rom_series () {
    echo '|_______________________________________________|'
    sleep 2
    main_menu
+}
+
+ftp () {
+   banner
+   echo '|                                               |'
+   echo '|              Configure FTP host               |'
+   echo '|             --------------------              |'
+   if [ -f $TSJ_PATH/.ftp ]; then
+      echo '|                                               |'
+      echo '| Found a valid FTP configuration:              |'
+      echo '|_______________________________________________|'
+      echo ''
+	  echo '  FTP host:     '$(cat .ftp | awk '{print $1}')
+      echo '  FTP user:     '$(cat .ftp | awk '{print $2}')
+      echo '  FTP password: '$(cat .ftp | awk '{print $3}')
+      echo ' _______________________________________________'
+      echo '|                                               |'
+	  echo '| [r] Reconfigure FTP host                      |'
+      echo '| Press ENTER to continue.                      |'
+      echo '|_______________________________________________|'
+      read -p 'Choice: ' CHOICE
+	  if [ "$CHOICE" == "r" ]; then
+	     rm $TSJ_PATH/.ftp
+		 ftp
+	  fi
+      main_menu
+   else
+      echo '|                                               |'
+      echo '| A valid configuration has not found.          |'
+	  echo '| Configuring your FTP host...                  |'
+      echo '|_______________________________________________|'  
+	  echo ''
+	  read -p '  FTP host:     ' $FTP_HOST
+	  read -p '  FTP user:     ' $FTP_USER
+	  read -p '  FTP password: ' $FTP_PASSWORD
+	  echo ''$FTP_HOST' '$FTP_USER' '$FTP_PASSWORD'' > $TSJ_PATH/.ftp
+      echo ' _______________________________________________'
+      echo '|                                               |'
+	  echo '| Your FTP host has correctly configured.       |'
+      echo '| Press ENTER to continue.                      |'
+      echo '|_______________________________________________|'
+	  read -p ''
+	  main_menu
+   fi
 }
 
 license () {
@@ -270,8 +319,9 @@ main_menu () {
    echo '|                 -----------                   |'
    echo '|                                               |'
    echo '| [1] Configure a ROMs series build             |'
-   echo '| [2] License                                   |'
-   echo '| [3] About                                     |'
+   echo '| [2] Configure FTP host                        |'
+   echo '| [3] License                                   |'
+   echo '| [4] About                                     |'
    echo '|                                               |'
    echo '|                                               |'
    echo '|-----------------------------------------------|'
@@ -285,8 +335,10 @@ main_menu () {
    if [ "$CHOICE" == 1 ]; then
       rom_series
    elif [ "$CHOICE" == 2 ]; then
-      license
+      ftp
    elif [ "$CHOICE" == 3 ]; then
+      license
+   elif [ "$CHOICE" == 4 ]; then
       about
    elif [ "$CHOICE" == "x" ]; then
       build_confirmation
@@ -318,7 +370,7 @@ sleep 1
 if [ -f $TSJ_PATH/.tsj_conf ]; then
    banner
    echo '|                                               |'
-   echo '| Found a valid configuartion.                  |'
+   echo '| Found a valid configuration.                  |'
    echo '|_______________________________________________|'
    cd $(cat $TSJ_PATH/.tsj_conf)
    sleep 0.5
