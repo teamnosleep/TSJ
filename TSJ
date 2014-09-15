@@ -268,8 +268,8 @@ rom_series () {
 ftp () {
    banner
    echo '|                                               |'
-   echo '|              Configure FTP host               |'
-   echo '|             --------------------              |'
+   echo '|                Manage FTP host                |'
+   echo '|               -----------------               |'
    if [ -f $TSJ_PATH/.ftp ]; then
       echo '|                                               |'
       echo '| Found a valid FTP configuration:              |'
@@ -278,15 +278,20 @@ ftp () {
       echo '  FTP host:     '$(cat .ftp | awk '{print $1}')
       echo '  FTP user:     '$(cat .ftp | awk '{print $2}')
       echo '  FTP password: '$(cat .ftp | awk '{print $3}')
+      echo ''
+      echo '  [r] reconfigure FTP host'
+      echo ''
       echo ' _______________________________________________'
       echo '|                                               |'
-      echo '| [r] Reconfigure FTP host                      |'
       echo '| Press ENTER to continue.                      |'
       echo '|_______________________________________________|'
       echo ''
       read -p 'Choice: ' CHOICE
 	  if [ "$CHOICE" == "r" ]; then
 	     rm $TSJ_PATH/.ftp
+             ftp
+          elif [ "$CHOICE" == "R" ]; then
+             rm $TSJ_PATH/.ftp
              ftp
 	  fi
       main_menu
@@ -361,7 +366,7 @@ main_menu () {
    echo '|                 -----------                   |'
    echo '|                                               |'
    echo '| [1] Configure a ROMs series build             |'
-   echo '| [2] Configure FTP host                        |'
+   echo '| [2] Manage FTP host                           |'
    echo '| [3] License                                   |'
    echo '| [4] About                                     |'
    echo '|                                               |'
