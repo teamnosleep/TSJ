@@ -79,6 +79,8 @@ prepare_build_script () {
    echo 'JOBS_NUM=$(cat /proc/cpuinfo | grep "^processor" | wc -l)' >> .build_script
    echo 'TSJ_OUTPUT='$TSJ_OUTPUT'' >> .build_script
    echo '' >> .build_script
+   echo '##########' >> .build_script
+   echo '' >> .build_script
 }
 
 build_script () {
@@ -101,6 +103,7 @@ ccache_setup () {
    else
    echo ''$BUILD_ROM'/prebuilt/linux-x86/ccache -M '$CCACHE'' >> .build_script
    fi
+   echo '' >> .build_script
 }
 
 exit_tsj () {
@@ -241,7 +244,7 @@ rom_series () {
          build_script
          let DEVICE_N=$DEVICE_N-1
       done
-      echo 'mv $(ls '$BUILD_ROM'/out/target/product/'$BUILD_DEVICE'/ | grep zip$) $TSJ_OUTPUT/'$BUILD_ROM'-'$BUILD_DEVICE'-$(date +%Y_%m_%d).zip' >> .build_script
+      echo 'mv $(ls out/target/product/'$BUILD_DEVICE'/ | grep zip$) $TSJ_OUTPUT/'$BUILD_ROM'-'$BUILD_DEVICE'-$(date +%Y_%m_%d).zip' >> .build_script
       echo 'mv .build_log $TSJ_OUTPUT/'$BUILD_ROM'-'$BUILD_DEVICE'-$(date +%Y_%m_%d)-build.log' >> .build_script
       echo 'echo $(md5sum $TSJ_OUTPUT/'$BUILD_ROM'-'$BUILD_DEVICE'-$(date +%Y_%m_%d).zip | awk "{print $1}") > $TSJ_OUTPUT/'$BUILD_ROM'-'$BUILD_DEVICE'-sum.md5' >> .build_script
       echo 'make -j$JOBS_NUM clean' >> .build_script
