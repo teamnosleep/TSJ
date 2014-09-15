@@ -89,6 +89,20 @@ build_script () {
    echo 'make -j$JOBS_NUM otapackage >> .build_log' >> .build_script
 }
 
+ccache_setup () {
+   echo ' _______________________________________________'
+   echo '|                                               |'
+   echo '| Which is your desired max ccache size?        |'
+   echo '|_______________________________________________|'
+   echo ''
+   read -p 'Choice: GB ' CCACHE
+   if [ -d "$BUILD_ROM/prebuilts/misc/linux-x86/ccache" ]; then
+   echo ''$BUILD_ROM'/prebuilts/misc/linux-x86/ccache -M '$CCACHE'' >> .build_script
+   else
+   echo ''$BUILD_ROM'/prebuilt/linux-x86/ccache -M '$CCACHE'' >> .build_script
+   fi
+}
+
 exit_tsj () {
    banner
    echo '|                                               |'
@@ -158,6 +172,18 @@ rom_series () {
       echo '|                                               |'
       echo '|        ROMs building configurations           |'
       echo '|       ------------------------------          |'
+      echo '|                                               |'
+      echo '| Do you want to enable ccache for this ROM?    |'
+      echo '|_______________________________________________|'
+      echo ''
+      read -p 'Choice [y/N]: 'YN_CCACHE
+      if [ "$YN_CCACHE" == "y" ]; then
+         ccache_setup
+      elif [ "$YN_CCACHE" == "Y" ]; then
+         ccache_setup
+      fi
+      echo ' _______________________________________________ '
+      echo '|                                               |'
       echo '| How many devices you want to build            |'
       echo '| the following ROM for?                        |'
       echo '|_______________________________________________|'
