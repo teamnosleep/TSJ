@@ -73,24 +73,6 @@ build_confirmation () {
    fi
 }
 
-prepare_build_script () {
-   echo '#!/usr/bin/sh' > .build_script
-   echo '' >> .build_script
-   echo 'JOBS_NUM=$(cat /proc/cpuinfo | grep "^processor" | wc -l)' >> .build_script
-   echo 'TSJ_OUTPUT='$TSJ_OUTPUT'' >> .build_script
-   echo '' >> .build_script
-   echo '##########' >> .build_script
-   echo '' >> .build_script
-}
-
-build_script () {
-   echo 'cd '$BUILD_ROM'' >> .build_script
-   echo '. build/envsetup.sh > .build_log' >> .build_script
-   echo 'lunch '$BUILD_DEVICE'-userdebug >> .build_log' >> .build_script
-   echo 'make -j$JOBS_NUM clean && make -j$JOBS_NUM clobber && rm -rf out/ >> .build_log' >> .build_script
-   echo 'make -j$JOBS_NUM otapackage >> .build_log' >> .build_script
-}
-
 ccache_setup () {
    echo ' _______________________________________________'
    echo '|                                               |'
@@ -140,7 +122,13 @@ rom_series () {
    echo '| include into your series compilation?         |'
    echo '|_______________________________________________|'
    echo ''
-   prepare_build_script
+   echo '#!/usr/bin/sh' > .build_script
+   echo '' >> .build_script
+   echo 'JOBS_NUM=$(cat /proc/cpuinfo | grep "^processor" | wc -l)' >> .build_script
+   echo 'TSJ_OUTPUT='$TSJ_OUTPUT'' >> .build_script
+   echo '' >> .build_script
+   echo '##########' >> .build_script
+   echo '' >> .build_script
    DIRS=$(ls -l --time-style="long-iso" $ENV_PATH | egrep '^d'| awk '{print $9}')
    for DIR in $DIRS; do
       if [ -d $DIR/build ]; then
@@ -240,21 +228,25 @@ rom_series () {
       else
          echo "$DEVICE_LIST" > .device_list
       fi
+      echo 'cd '$BUILD_ROM'' >> .build_script
+      echo '. build/envsetup.sh > .build_log' >> .build_script
+      echo '' >> .build_script
       while [ "$DEVICE_N" -gt 0 ]; do
          BUILD_DEVICE=$(cat .device_list | awk '{print $'$DEVICE_N'}')
-         build_script
+         echo 'lunch '$BUILD_DEVICE'-userdebug >> .build_log' >> .build_script
+         echo 'make -j$JOBS_NUM otapackage >> .build_log' >> .build_script
+         echo 'mv $(ls out/target/product/'$BUILD_DEVICE'/ | grep zip$) $TSJ_OUTPUT/'$BUILD_ROM'-'$BUILD_DEVICE'-$(date +%Y_%m_%d).zip' >> .build_script
+         echo 'mv .build_log $TSJ_OUTPUT/'$BUILD_ROM'-'$BUILD_DEVICE'-$(date +%Y_%m_%d)-build.log' >> .build_script
+         echo 'echo $(md5sum $TSJ_OUTPUT/'$BUILD_ROM'-'$BUILD_DEVICE'-$(date +%Y_%m_%d).zip | awk "{print $1}") > $TSJ_OUTPUT/'$BUILD_ROM'-'$BUILD_DEVICE'-sum.md5' >> .build_script
+         echo 'curl -T $TSJ_OUTPUT/'$BUILD_ROM'-'$BUILD_DEVICE'-$(date +%Y_%m_%d).zip ftp://'$(cat .ftp | awk '{print $1}')' --user '$(cat .ftp | awk '{print $2}')':'$(cat .ftp | awk '{print $3}') >> .build_script
+         echo 'curl -T $TSJ_OUTPUT'$BUILD_ROM'-'$BUILD_DEVICE'-$(date +%Y_%m_%d)-build.log ftp://'$(cat .ftp | awk '{print $1}')' --user '$(cat .ftp | awk '{print $2}')':'$(cat .ftp | awk '{print $3}') >> .build_script
+         echo 'curl -T $TSJ_OUTPUT'$BUILD_ROM'-'$BUILD_DEVICE'-sum.md5 ftp://'$(cat .ftp | awk '{print $1}')' --user '$(cat .ftp | awk '{print $2}')':'$(cat .ftp | awk '{print $3}') >> .build_script
+         echo '' >> .build_script
          let DEVICE_N=$DEVICE_N-1
       done
-      echo 'mv $(ls out/target/product/'$BUILD_DEVICE'/ | grep zip$) $TSJ_OUTPUT/'$BUILD_ROM'-'$BUILD_DEVICE'-$(date +%Y_%m_%d).zip' >> .build_script
-      echo 'mv .build_log $TSJ_OUTPUT/'$BUILD_ROM'-'$BUILD_DEVICE'-$(date +%Y_%m_%d)-build.log' >> .build_script
-      echo 'echo $(md5sum $TSJ_OUTPUT/'$BUILD_ROM'-'$BUILD_DEVICE'-$(date +%Y_%m_%d).zip | awk "{print $1}") > $TSJ_OUTPUT/'$BUILD_ROM'-'$BUILD_DEVICE'-sum.md5' >> .build_script
+      echo '' >> .build_script
       echo 'make -j$JOBS_NUM clean' >> .build_script
       echo 'cd ..' >> .build_script
-      echo '' >> .build_script
-      echo 'cd $TSJ_OUTPUT' >> .build_script
-      echo 'curl -T '$BUILD_ROM'-'$BUILD_DEVICE'-$(date +%Y_%m_%d).zip ftp://'$(cat .ftp | awk '{print $1}')' --user '$(cat .ftp | awk '{print $2}')':'$(cat .ftp | awk '{print $3}') >> .build_script
-      echo 'curl -T '$BUILD_ROM'-'$BUILD_DEVICE'-$(date +%Y_%m_%d)-build.log ftp://'$(cat .ftp | awk '{print $1}')' --user '$(cat .ftp | awk '{print $2}')':'$(cat .ftp | awk '{print $3}') >> .build_script
-      echo 'curl -T '$BUILD_ROM'-'$BUILD_DEVICE'-sum.md5 ftp://'$(cat .ftp | awk '{print $1}')' --user '$(cat .ftp | awk '{print $2}')':'$(cat .ftp | awk '{print $3}') >> .build_script
       echo '' >> .build_script
       echo '##########' >> .build_script
       echo '' >> .build_script
