@@ -185,7 +185,7 @@ rom_series () {
       echo "$ROM_LIST" > .rom_list
    fi
    while [ "$ROM_N" -gt 0 ]; do
-      BUILD_ROM=$(cat .rom_list | awk '{print $$ROM_N}')
+      BUILD_ROM=$(cat .rom_list | awk '{print $'$ROM_N'}')
       banner
       echo '|                                               |'
       echo '|        ROMs building configurations           |'
@@ -241,7 +241,7 @@ rom_series () {
          echo "$DEVICE_LIST" > .device_list
       fi
       while [ "$DEVICE_N" -gt 0 ]; do
-         BUILD_DEVICE=$(cat .device_list | awk '{print $$DEVICE_N}')
+         BUILD_DEVICE=$(cat .device_list | awk '{print $'$DEVICE_N'}')
          build_script
          let DEVICE_N=$DEVICE_N-1
       done
