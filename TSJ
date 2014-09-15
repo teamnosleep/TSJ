@@ -36,7 +36,7 @@ first_configuration () {
    echo '|_______________________________________________|'
    echo ''
    read -p '  Folder: ' ENV_PATH
-   ENV_PATH=$(echo $ENV_PATH | tail -c +2 | head -c -2)
+   ENV_PATH=$(echo $ENV_PATH)
    echo $ENV_PATH > $ENV_PATH/.tsj_conf
    mv ./TSJ $ENV_PATH/
    TSJ_PATH=$ENV_PATH
@@ -99,7 +99,7 @@ exit_tsj () {
 }
 
 rom_series () {
-   if [ -f $TSJ_PATH/.ftp ]; then 
+   if [ -f $TSJ_PATH/.ftp ]; then
       banner
       echo '|                                               |'
       echo '| Found a valid FTP configuration.              |'
@@ -251,7 +251,7 @@ rom_series () {
       done
       echo '' >> .build_script
       echo 'make -j$JOBS_NUM clean' >> .build_script
-      echo 'rm -rf $(ls . | grep -v ".repo")' >> .build_script 
+      echo 'rm -rf $(ls . | grep -v ".repo")' >> .build_script
       echo 'cd ..' >> .build_script
       echo '' >> .build_script
       echo '##########' >> .build_script
@@ -301,7 +301,7 @@ ftp () {
       echo '|                                               |'
       echo '| A valid configuration has not found.          |'
       echo '| Configuring your FTP host...                  |'
-      echo '|_______________________________________________|'  
+      echo '|_______________________________________________|'
       echo ''
       read -p '  FTP host:     ' FTP_HOST
       read -p '  FTP user:     ' FTP_USER
