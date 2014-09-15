@@ -229,6 +229,7 @@ rom_series () {
          echo "$DEVICE_LIST" > .device_list
       fi
       echo 'cd '$BUILD_ROM'' >> .build_script
+      echo 'repo sync' >> .build_script
       echo '. build/envsetup.sh > .build_log' >> .build_script
       echo '' >> .build_script
       while [ "$DEVICE_N" -gt 0 ]; do
