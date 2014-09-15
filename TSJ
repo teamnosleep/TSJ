@@ -120,7 +120,7 @@ rom_series () {
       echo '| Found a valid FTP configuration:              |'
       echo '|_______________________________________________|'
       sleep 1
-   elif
+   else
       banner
       echo '|                                               |'
       echo '| A valid FTP configuration has not found.      |'
