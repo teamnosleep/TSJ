@@ -234,6 +234,10 @@ rom_series () {
       echo '' >> .build_script
       while [ "$DEVICE_N" -gt 0 ]; do
          BUILD_DEVICE=$(cat .device_list | awk '{print $'$DEVICE_N'}')
+         BUILD_DEVICE_PATH=$(find device/ -name $BUILD_DEVICE)
+         if [ -f $BUILD_DEVICE_PATH/patches/install.sh ]; then
+            echo 'bash '$BUILD_DEVICE_PATH'/patches/install.sh]' >> .build_script
+         fi
          echo 'lunch '$BUILD_DEVICE'-userdebug >> .build_log' >> .build_script
          echo 'make -j$JOBS_NUM otapackage >> .build_log' >> .build_script
          echo 'mv $(ls out/target/product/'$BUILD_DEVICE'/ | grep zip$) $TSJ_OUTPUT/'$BUILD_ROM'-'$BUILD_DEVICE'-$(date +%Y_%m_%d).zip' >> .build_script
