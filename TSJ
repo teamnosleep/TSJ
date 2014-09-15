@@ -114,6 +114,21 @@ exit_tsj () {
 }
 
 rom_series () {
+   if [ -f $TSJ_PATH/.ftp ]; then 
+      banner
+      echo '|                                               |'
+      echo '| Found a valid FTP configuration:              |'
+      echo '|_______________________________________________|'
+      sleep 1
+   elif
+      banner
+      echo '|                                               |'
+      echo '| A valid FTP configuration has not found.      |'
+      echo '| Configuring your FTP host...                  |'
+      echo '|_______________________________________________|'
+      sleep 1
+      ftp
+   fi
    banner
    echo '|                                               |'
    echo '|            Compile a ROMs series              |'
