@@ -176,7 +176,7 @@ rom_series () {
       echo '| Do you want to enable ccache for this ROM?    |'
       echo '|_______________________________________________|'
       echo ''
-      read -p 'Choice [y/N]: 'YN_CCACHE
+      read -p 'Choice [y/N]: ' YN_CCACHE
       if [ "$YN_CCACHE" == "y" ]; then
          ccache_setup
       elif [ "$YN_CCACHE" == "Y" ]; then
