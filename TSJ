@@ -120,7 +120,7 @@ rom_series () {
    if [ -f $TSJ_PATH/.ftp ]; then 
       banner
       echo '|                                               |'
-      echo '| Found a valid FTP configuration.              |'
+      echo '| Found a valid FTP configuration:              |'
       echo '|_______________________________________________|'
       sleep 1
    else
@@ -251,9 +251,9 @@ rom_series () {
       echo 'cd ..' >> .build_script
       echo '' >> .build_script
       echo 'cd $TSJ_OUTPUT' >> .build_script
-      echo 'curl -T '$BUILD_ROM'-'$BUILD_DEVICE'-$(date +%Y_%m_%d).zip ftp://'$(cat ../.ftp | awk '{print $1}')' --user '$(cat ../.ftp | awk '{print $2}')':'$(cat ../.ftp | awk '{print $3}') >> .build_script
-      echo 'curl -T '$BUILD_ROM'-'$BUILD_DEVICE'-$(date +%Y_%m_%d)-build.log ftp://'$(cat ../.ftp | awk '{print $1}')' --user '$(cat ../.ftp | awk '{print $2}')':'$(cat ../.ftp | awk '{print $3}') >> .build_script
-      echo 'curl -T '$BUILD_ROM'-'$BUILD_DEVICE'-sum.md5 ftp://'$(cat ../.ftp | awk '{print $1}')' --user '$(cat ../.ftp | awk '{print $2}')':'$(cat ../.ftp | awk '{print $3}') >> .build_script
+      echo 'curl -T '$BUILD_ROM'-'$BUILD_DEVICE'-$(date +%Y_%m_%d).zip ftp://'$(cat .ftp | awk '{print $1}')' --user '$(cat .ftp | awk '{print $2}')':'$(cat .ftp | awk '{print $3}') >> .build_script
+      echo 'curl -T '$BUILD_ROM'-'$BUILD_DEVICE'-$(date +%Y_%m_%d)-build.log ftp://'$(cat .ftp | awk '{print $1}')' --user '$(cat .ftp | awk '{print $2}')':'$(cat .ftp | awk '{print $3}') >> .build_script
+      echo 'curl -T '$BUILD_ROM'-'$BUILD_DEVICE'-sum.md5 ftp://'$(cat .ftp | awk '{print $1}')' --user '$(cat .ftp | awk '{print $2}')':'$(cat .ftp | awk '{print $3}') >> .build_script
       echo '' >> .build_script
       echo '##########' >> .build_script
       echo '' >> .build_script
