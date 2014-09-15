@@ -120,7 +120,7 @@ rom_series () {
    if [ -f $TSJ_PATH/.ftp ]; then 
       banner
       echo '|                                               |'
-      echo '| Found a valid FTP configuration:              |'
+      echo '| Found a valid FTP configuration.              |'
       echo '|_______________________________________________|'
       sleep 1
    else
