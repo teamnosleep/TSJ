@@ -283,6 +283,7 @@ ftp () {
       echo '| [r] Reconfigure FTP host                      |'
       echo '| Press ENTER to continue.                      |'
       echo '|_______________________________________________|'
+      echo ''
       read -p 'Choice: ' CHOICE
 	  if [ "$CHOICE" == "r" ]; then
 	     rm $TSJ_PATH/.ftp
@@ -295,9 +296,9 @@ ftp () {
       echo '| Configuring your FTP host...                  |'
       echo '|_______________________________________________|'  
       echo ''
-      read -p '  FTP host:     ' $FTP_HOST
-      read -p '  FTP user:     ' $FTP_USER
-      read -p '  FTP password: ' $FTP_PASSWORD
+      read -p '  FTP host:     ' FTP_HOST
+      read -p '  FTP user:     ' FTP_USER
+      read -p '  FTP password: ' FTP_PASSWORD
       echo ''$FTP_HOST' '$FTP_USER' '$FTP_PASSWORD'' > $TSJ_PATH/.ftp
       echo ' _______________________________________________'
       echo '|                                               |'
